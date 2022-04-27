@@ -209,6 +209,10 @@ func (r *ReconcilePlacementRule) Reconcile(ctx context.Context, request reconcil
 		return reconcile.Result{}, err
 	}
 
+	if _, ok := instance.GetAnnotations()["hub-of-hubs.open-cluster-management.io/local-resource"]; !ok {
+		return reconcile.Result{}, nil
+	}
+
 	orgclmap := make(map[string]string)
 	for _, cl := range instance.Status.Decisions {
 		orgclmap[cl.ClusterName] = cl.ClusterNamespace
