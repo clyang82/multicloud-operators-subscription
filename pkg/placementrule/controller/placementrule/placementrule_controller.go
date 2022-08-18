@@ -67,7 +67,7 @@ func add(mgr manager.Manager, r reconcile.Reconciler) error {
 	placementRulePredicate, _ := predicate.LabelSelectorPredicate(metav1.LabelSelector{
 		MatchExpressions: []metav1.LabelSelectorRequirement{
 			{
-				Key:      "hub-of-hubs.open-cluster-management.io/local-resource",
+				Key:      "global-hub.open-cluster-management.io/local-resource",
 				Operator: metav1.LabelSelectorOpExists,
 			},
 		},
@@ -114,7 +114,6 @@ func (mapper *ClusterPlacementRuleMapper) Map(obj client.Object) []reconcile.Req
 
 	listopts := &client.ListOptions{}
 	err := mapper.List(context.TODO(), plList, listopts)
-
 	if err != nil {
 		klog.Error("Failed to list placement rules in mapper with err:", err)
 	}
@@ -155,7 +154,6 @@ func (mapper *PolicyPlacementRuleMapper) Map(obj client.Object) []reconcile.Requ
 
 	listopts := &client.ListOptions{}
 	err := mapper.List(context.TODO(), plList, listopts)
-
 	if err != nil {
 		klog.Error("Failed to list placement rules in mapper with err:", err)
 	}
@@ -197,7 +195,7 @@ func (r *ReconcilePlacementRule) Reconcile(ctx context.Context, request reconcil
 		return reconcile.Result{}, err
 	}
 
-	if _, ok := instance.GetAnnotations()["hub-of-hubs.open-cluster-management.io/local-resource"]; !ok {
+	if _, ok := instance.GetLabels()["global-hub.open-cluster-management.io/local-resource"]; !ok {
 		return reconcile.Result{}, nil
 	}
 
@@ -248,7 +246,6 @@ func (r *ReconcilePlacementRule) Reconcile(ctx context.Context, request reconcil
 
 func (r *ReconcilePlacementRule) UpdateStatus(request reconcile.Request, instance *appv1alpha1.PlacementRule) error {
 	err := r.Status().Update(context.TODO(), instance)
-
 	if err != nil {
 		klog.Error("Error returned when updating placementrule decisions:", err, " ,instance:", instance)
 	}
